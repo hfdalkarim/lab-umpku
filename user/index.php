@@ -8,7 +8,7 @@ session_start();
 
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<title>Peminjaman Barang dan Ruangan</title>
+	<title>Pinjam Barang dan Ruangan</title>
 	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
 	<link rel="icon" href="../assets/img/icon.ico" type="image/x-icon" />
 
@@ -41,12 +41,14 @@ session_start();
 		<!--
 				Tip 1: You can change the background color of the main header using: data-background-color="blue | purple | light-blue | green | orange | red"
 		-->
-		<div class="main-header" data-background-color="purple">
+		<div class="main-header" data-background-color="orange">
 			<!-- Logo Header -->
 			<div class="logo-header">
 
 				<a href="#" class="logo">
-					<img src="../assets/img/logoazzara.svg" alt="navbar brand" class="navbar-brand">
+					<!--<img src="../assets/img/umpku.png" alt="navbar brand" class="navbar-brand">-->
+					<img src="../assets/img/umpku.png" alt="navbar brand" class="navbar-brand" style="height: 50px; object-fit: contain;">
+
 				</a>
 				<button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon">
@@ -100,6 +102,12 @@ session_start();
 							</span>
 							<h4 class="text-section">Components</h4>
 						</li>
+						<li class="nav-item">
+							<a href="?view=cekstock">
+								<i class="fas fa-atlas"></i>
+								<p>Cek Stock Barang</p>
+							</a>
+						</li>
 
 						<li class="nav-item">
 							<a href="?view=datapinjambarang">
@@ -107,13 +115,21 @@ session_start();
 								<p>Pinjam Barang</p>
 							</a>
 						</li>
+						<li class="nav-item">
+							<a href="?view=cekjadwal">
+								<i class="fab fa-algolia"></i>
+								<p>Cek Jadwal Ruangan</p>
+							</a>
+						</li>
 
 						<li class="nav-item">
 							<a href="?view=datapinjamruangan">
-								<i class="fas fa-briefcase"></i>
+								<i class="fas fa-archway"></i>
 								<p>Pinjam Ruangan</p>
 							</a>
 						</li>
+						
+						
 
 						<li class="nav-item">
 							<a href="../logout.php">
@@ -140,6 +156,10 @@ session_start();
 			include 'peminjaman/barang/createpinjambarang.php';
 		elseif ($_GET['view'] == 'detailpinjambarang')
 			include 'peminjaman/barang/detailpinjambarang.php';
+		elseif ($_GET['view'] == 'cekjadwal')
+			include 'cekjadwal.php';
+		elseif ($_GET['view'] == 'cekstock')
+			include 'cekstock.php';
 
 		// Data Pinjam Ruangan
 		elseif ($_GET['view'] == 'datapinjamruangan')

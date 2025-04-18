@@ -1,3 +1,11 @@
+<?php
+// koneksi harus dibuat dulu sebelum mysqli_query dipanggil
+// $conn = mysqli_connect('localhost','root','','peminjaman');
+
+// if (!$conn) {
+//     die("Koneksi gagal: " . mysqli_connect_error());
+// }
+?>
 <?php 
 $query = mysqli_query($conn,'SELECT count(*) as barang from barang');
 $row = mysqli_fetch_array($query);
@@ -130,5 +138,5 @@ $z = mysqli_fetch_array($t);
 					</div>
 				</div>
 			</div>
-			<center><h6><b>&copy; Copyright@2020|GPIB CINERE|</b></h6></center>
+			<center><h6><b>&copy; Copyright@2025|UMPKU|</b></h6></center>
 		</div>

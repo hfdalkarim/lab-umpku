@@ -1,3 +1,17 @@
+<?php
+//session_start(); // Pastikan ini hanya dipanggil sekali di halaman yang memerlukan session
+// Memeriksa apakah user sudah login
+if (!isset($_SESSION['id'])) {
+    // Jika belum login, redirect ke halaman login
+    header("location:index.php");
+    exit();
+}
+
+// Mengambil data dari session
+$namaPeminjam = $_SESSION['nama_lengkap'] ?? ''; // Menggunakan null coalescing
+$emailUser    = $_SESSION['email'] ?? ''; // Menggunakan null coalescing
+?>
+
 <div class="main-panel">
 	<div class="content">
 		<div class="page-inner">
@@ -70,19 +84,21 @@
 						<form method="POST" action="" enctype="multipart/form-data">
 							<div class="card-body">
 								<div class="form-group">
-									<label>Email Pengirim</label>
-									<input type="email" name="email_user" placeholder="Email Pengirim ..." class="form-control" required="">
-								</div>
-								<div class="form-group">
-									<label>Password Pengirim</label>
-									<input type="password" name="password_user" placeholder="Password Pengirim ..." class="form-control" required="">
-								</div>
+                                    <label>Nama Peminjam</label>
+                                    <input type="text" name="nama_user" value="<?php echo htmlspecialchars($namaPeminjam); ?>" class="form-control" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" name="email_user" value="<?php echo htmlspecialchars($emailUser ); ?>" class="form-control" readonly>
+                                </div>
 
 								<div class="form-group">
 									<label>Tgl Mulai Pinjam</label>
-									<input type="text" readonly="" name="tgl_mulai" class="form-control" value="<?php date_default_timezone_set("Asia/Jakarta");
+									<!--<input type="text" readonly="" name="tgl_mulai" class="form-control" value="<?php date_default_timezone_set("Asia/Jakarta");
 																												echo date('Y-m-d H:i:s') ?>">
-								</div>
+									-->
+									<input type="datetime-local" name="tgl_mulai" class="form-control">	
+							</div>
 
 								<div class="form-group">
 									<label>Tgl Selesai Pinjam</label>
@@ -105,7 +121,7 @@
 		</div>
 	</div>
 	<center>
-		<h6><b>&copy; Copyright@2020|GPIB CINERE|</b></h6>
+		<h6><b>&copy; Copyright@2020|UMPKU|</b></h6>
 	</center>
 </div>
 
@@ -124,24 +140,68 @@
 <?php
 if (isset($_POST['simpan'])) {
 
-	$id_ruangan = $_POST['id_ruangan'];
-	$tgl_mulai = $_POST['tgl_mulai'];
-	$tgl_selesai = $_POST['tgl_selesai'];
-	$id_user = $_POST['id_user'];
-	$status = $_POST['status'];
+    // Ambil data dari form
+    $id_ruangan = $_POST['id_ruangan'];
+    $tgl_mulai = $_POST['tgl_mulai']; // format: Y-m-d H:i:s
+    $tgl_selesai = $_POST['tgl_selesai']; // format: Y-m-d H:i:s
+    $id_user = $_POST['id_user'];
+    $status = $_POST['status'];
 
-	$email_user = $_POST['email_user'];
-	$email_admin = $_POST['email_admin'];
-	$password_user = $_POST['password_user'];
-	$nama_ruangan = $_POST['nama_ruangan'];
+    $email_user = $_POST['email_user'];
+    $email_admin = $_POST['email_admin'];
+    $password_user = $_POST['password_user'];
+    $nama_ruangan = $_POST['nama_ruangan'];
+	$nama_peminjam = $_POST['nama_user']; // Ambil nama peminjam dari form
+    $email_peminjam = $_POST['email_user']; // Ambil email peminjam dari form
 
-	$selSto = mysqli_query($conn, "SELECT * FROM ruangan WHERE id='$id_ruangan'");
-	$sto    = mysqli_fetch_array($selSto);
-	$stok    = $sto['status'];
-	//menghitung sisa stok
-	$sisa    = 'dipinjam';
 
-	mysqli_query($conn, "INSERT into pinjamruangan values ('','$id_ruangan', '$id_user','$tgl_mulai','$tgl_selesai','$status')");
-	mysqli_query($conn, "UPDATE ruangan SET status='$sisa' WHERE id='$id_ruangan'");
+    // Ambil hari dan jam dari tgl_mulai dan tgl_selesai
+    $hari_en = date('l', strtotime($tgl_mulai)); // "Monday", "Tuesday", ...
+    $hari_map = [
+        'Monday' => 'Senin',
+        'Tuesday' => 'Selasa',
+        'Wednesday' => 'Rabu',
+        'Thursday' => 'Kamis',
+        'Friday' => 'Jumat',
+        'Saturday' => 'Sabtu',
+        'Sunday' => 'Minggu',
+    ];
+    $hari = $hari_map[$hari_en]; // hasil "Senin", dll
+    $jam_mulai = date('H:i:s', strtotime($tgl_mulai));
+    $jam_selesai = date('H:i:s', strtotime($tgl_selesai));
+
+    // Cek bentrok dengan jadwal kuliah yang berulang mingguan (dalam periode semester)
+    $cekJadwal = mysqli_query($conn, "
+        SELECT * FROM jadwal
+        WHERE id_ruangan = '$id_ruangan'
+          AND hari = '$hari'
+          AND '$tgl_mulai' BETWEEN semester_mulai AND semester_selesai
+          AND (
+                ('$jam_mulai' BETWEEN waktu_mulai AND waktu_selesai)
+             OR ('$jam_selesai' BETWEEN waktu_mulai AND waktu_selesai)
+             OR (waktu_mulai BETWEEN '$jam_mulai' AND '$jam_selesai')
+             OR (waktu_selesai BETWEEN '$jam_mulai' AND '$jam_selesai')
+          )
+    ");
+
+    if (mysqli_num_rows($cekJadwal) > 0) {
+        // Bentrok dengan jadwal kuliah
+        echo "<script>alert('Gagal meminjam: Waktu yang dipilih sudah ada jadwal kuliah.');</script>";
+    } else {
+        // Tidak bentrok, lanjut simpan
+        $insert = mysqli_query($conn, "
+            INSERT INTO pinjamruangan (id_ruangan, id_user, tgl_mulai, tgl_selesai, status,nama_peminjam, email_peminjam)
+            VALUES ('$id_ruangan', '$id_user', '$tgl_mulai', '$tgl_selesai', '$status','$nama_peminjam', '$email_peminjam')
+        ");
+
+        if ($insert) {
+            // Update status ruangan
+            $update = mysqli_query($conn, "UPDATE ruangan SET status='dipinjam' WHERE id='$id_ruangan'");
+            echo "<script>alert('Peminjaman berhasil disimpan.');</script>";
+        } else {
+            echo "<script>alert('Gagal menyimpan data peminjaman.');</script>";
+        }
+    }
 }
 ?>
+

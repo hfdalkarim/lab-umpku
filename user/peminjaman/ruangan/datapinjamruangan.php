@@ -28,7 +28,7 @@
 					<div class="card">
 						<div class="card-header">
 							<div class="d-flex align-items-center">
-								<h4 class="card-title">Data Pinjam Ruangan</h4>
+								<h4 class="card-title">Data Pinjam Ruangan Saya</h4>
 								<a href="?view=createpinjamruangan" class="btn btn-primary btn-round ml-auto">
 									<i class="fa fa-plus"></i>
 									Tambah Data
@@ -93,7 +93,7 @@
 		</div>
 	</div>
 	<center>
-		<h6><b>&copy; Copyright@2020|GPIB CINERE|</b></h6>
+		<h6><b>&copy; Copyright@2020|UMPKU|</b></h6>
 	</center>
 </div>
 
@@ -163,7 +163,7 @@ while ($row = mysqli_fetch_array($c)) {
 						<h4>Apakah Anda Ingin Mengembalikan Pinjamanan Ini ?</h4>
 					</div>
 					<div class="modal-footer no-bd">
-						<button type="submit" name="ubah" class="btn btn-danger"><i class="fa fa-trash"></i> Batal Pinjam</button>
+						<button type="submit" name="ubah" class="btn btn-danger"><i class="fa fa-trash"></i> Kembalikan</button>
 						<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-undo"></i> Close</button>
 					</div>
 				</form>

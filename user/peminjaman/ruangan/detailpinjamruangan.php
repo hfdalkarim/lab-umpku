@@ -1,4 +1,13 @@
 <?php
+// Mulai session dan koneksi
+//session_start();
+// $conn = mysqli_connect('localhost','root','','peminjaman');
+
+// if (!$conn) {
+//     die("Koneksi gagal: " . mysqli_connect_error());
+// }
+?>
+<?php
 $query = mysqli_query($conn, "SELECT pinjamruangan.id, pinjamruangan.id_ruangan, pinjamruangan.id_user, pinjamruangan.tgl_mulai, pinjamruangan.tgl_selesai, pinjamruangan.status, ruangan.nama_ruangan, ruangan.foto, ruangan.deskripsi, user.nama_lengkap from pinjamruangan inner join ruangan on ruangan.id=pinjamruangan.id_ruangan inner join user on user.id=pinjamruangan.id_user and pinjamruangan.id='$_GET[id]'");
 $d = mysqli_fetch_array($query);
 ?>
@@ -74,7 +83,7 @@ $d = mysqli_fetch_array($query);
 									<tr>
 										<td>Foto</td>
 										<td>:</td>
-										<td><img src="../admin/master/ruangan/Fotoruangan/<?php echo $d['foto'] ?>" width="400" height="200"></td>
+										<td><img src="../admin/master/ruangan/Fotoruangan/<?php echo $d['foto'] ?>" width: 100px; height: auto;></td>
 									</tr>
 								</table>
 							</div>
@@ -85,6 +94,6 @@ $d = mysqli_fetch_array($query);
 		</div>
 	</div>
 	<center>
-		<h6><b>&copy; Copyright@2020|GPIB CINERE|</b></h6>
+		<h6><b>&copy; Copyright@2020|UMPKU|</b></h6>
 	</center>
 </div>

@@ -1,3 +1,10 @@
+<?php
+// $conn = mysqli_connect('localhost','root','','peminjaman');
+
+// if (!$conn) {
+//     die("Koneksi gagal: " . mysqli_connect_error());
+// }
+?>
 <div class="main-panel">
 			<div class="content">
 				<div class="page-inner">
@@ -146,9 +153,10 @@
 														<textarea class="form-control" placeholder="Deskripsi ..." rows="5" name="deskripsi" style="white-space: pre-line;" required=""><?php echo $d['deskripsi'] ?></textarea>
 													</div>
 													<div class="form-group">
-														<label>Foto</label>
-														<input type="file" name="foto" class="form-control" placeholder required="">
-													</div>
+        <label>Foto (Opsional)</label>
+        <input type="file" name="foto" class="form-control">
+        <small class="form-text text-muted">Biarkan kosong jika tidak ingin mengubah foto.</small>
+    </div>
 												</div>
 												<div class="modal-footer no-bd">
 													<button type="submit" name="ubah" class="btn btn-primary"><i class="fa fa-save"></i> Save Changes</button>
@@ -242,41 +250,81 @@
 
 								<?php } ?>
 
-		<?php
-            if(isset($_POST['simpan']))
-                {
-                    $nama_ruangan = $_POST['nama_ruangan'];
-                    $deskripsi = $_POST['deskripsi'];
-                    $foto = $_FILES['foto']['name'];
-                    $file_tmp = $_FILES['foto']['tmp_name'];
-                    
-                        move_uploaded_file($file_tmp, 'master/ruangan/Fotoruangan/' . $foto);
-                        
-                    mysqli_query($conn,"INSERT into ruangan values ('','$nama_ruangan','$deskripsi','$foto','free')");
-                    echo "<script>alert ('Data Berhasil Disimpan') </script>";
-                    echo"<meta http-equiv='refresh' content=0; URL=?view=dataruangan>";
-                }
+								<?php
+// Simpan Data Baru
+if (isset($_POST['simpan'])) {
+    $nama_ruangan = $_POST['nama_ruangan'];
+    $deskripsi = $_POST['deskripsi'];
+    $foto = $_FILES['foto']['name'];
+    $file_tmp = $_FILES['foto']['tmp_name'];
 
-                elseif(isset($_POST['ubah']))
-                {
-                	$id = $_POST['id'];
-                	$nama_ruangan = $_POST['nama_ruangan'];
-                    $deskripsi = $_POST['deskripsi'];
-                    $foto = $_FILES['foto']['name'];
-                    $file_tmp = $_FILES['foto']['tmp_name'];
-                    
-                        move_uploaded_file($file_tmp, 'master/ruangan/Fotoruangan/' . $foto);
-                        
-                    mysqli_query($conn,"UPDATE ruangan set id='$id', nama_ruangan='$nama_ruangan', deskripsi='$deskripsi', foto='$foto', status='free' where id='$id'");
-                    echo "<script>alert ('Data Berhasil Diubah') </script>";
-                    echo"<meta http-equiv='refresh' content=0; URL=?view=dataruangan>";
-                }
+    move_uploaded_file($file_tmp, 'master/ruangan/Fotoruangan/' . $foto);
 
-                elseif(isset($_POST['hapus']))
-                {
-                	$id = $_POST['id'];
-                	mysqli_query($conn,"DELETE from ruangan where id='$id'");
-                    echo "<script>alert ('Data Berhasil Dihapus') </script>";
-                    echo"<meta http-equiv='refresh' content=0; URL=?view=dataruangan>";
-                }
-                ?>
+    mysqli_query($conn, "INSERT INTO ruangan(nama_ruangan, deskripsi, foto, status) 
+                         VALUES ('$nama_ruangan', '$deskripsi', '$foto', 'free')");
+    
+    echo "<script>alert('Data Berhasil Disimpan')</script>";
+    echo "<meta http-equiv='refresh' content='0; URL=?view=dataruangan'>";
+}
+
+// Ubah Data
+elseif (isset($_POST['ubah'])) {
+    $id = $_POST['id'];
+    $nama_ruangan = $_POST['nama_ruangan'];
+    $deskripsi = $_POST['deskripsi'];
+    $foto_lama = $_POST['foto_lama'];
+
+    $foto_baru = $_FILES['foto']['name'];
+    $file_tmp = $_FILES['foto']['tmp_name'];
+
+    if (!empty($foto_baru)) {
+        move_uploaded_file($file_tmp, 'master/ruangan/Fotoruangan/' . $foto_baru);
+        $foto = $foto_baru;
+    } else {
+        $foto = $foto_lama;
+    }
+
+    mysqli_query($conn, "UPDATE ruangan SET 
+        nama_ruangan='$nama_ruangan', 
+        deskripsi='$deskripsi', 
+        foto='$foto', 
+        status='free' 
+        WHERE id='$id'");
+
+    echo "<script>alert('Data Berhasil Diubah')</script>";
+    echo "<meta http-equiv='refresh' content='0; URL=?view=dataruangan'>";
+}
+
+// Hapus Data
+elseif (isset($_POST['hapus'])) {
+    $id = $_POST['id'];
+    mysqli_query($conn, "DELETE FROM ruangan WHERE id='$id'");
+    echo "<script>alert('Data Berhasil Dihapus')</script>";
+    echo "<meta http-equiv='refresh' content='0; URL=?view=dataruangan'>";
+}
+?>
+
+				
+<!-- Tambahkan script untuk notifikasi pop-up -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+
+<script>
+    $(document).ready(function() {
+        // Notifikasi untuk tambah
+        <?php if (isset($_POST['simpan'])) { ?>
+            swal("Berhasil!", "Data Berhasil Disimpan", "success");
+        <?php } ?>
+
+        // Notifikasi untuk edit
+        <?php if (isset($_POST['ubah'])) { ?>
+            swal("Berhasil!", "Data Berhasil Diubah", "success");
+        <?php } ?>
+
+        // Notifikasi untuk hapus
+        <?php if (isset($_POST['hapus'])) { ?>
+            swal("Berhasil!", "Data Berhasil Dihapus", "success");
+        <?php } ?>
+    });
+</script>

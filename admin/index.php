@@ -2,12 +2,11 @@
 include '../koneksi.php';
 session_start();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<title>Peminjaman Barang dan Ruangan</title>
+	<title>Admin Panel</title>
 	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
 	<link rel="icon" href="../assets/img/icon.ico" type="image/x-icon"/>
 	
@@ -34,12 +33,14 @@ session_start();
 		<!--
 				Tip 1: You can change the background color of the main header using: data-background-color="blue | purple | light-blue | green | orange | red"
 		-->
-		<div class="main-header" data-background-color="purple">
+		<div class="main-header" data-background-color="orange">
 			<!-- Logo Header -->
 			<div class="logo-header">
 				
 				<a href="#" class="logo">
-					<img src="../assets/img/logoazzara.svg" alt="navbar brand" class="navbar-brand">
+					<!--<img src="../assets/img/umpku.png" alt="navbar brand" class="navbar-brand">-->
+					<img src="../assets/img/umpku.png" alt="navbar brand" class="navbar-brand" style="height: 50px; object-fit: contain;">
+
 				</a>
 				<button class="navbar-toggler sidenav-toggler ml-auto" type="button" data-toggle="collapse" data-target="collapse" aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon">
@@ -84,7 +85,7 @@ session_start();
 						<li class="nav-item">
 							<a href="?view=dashboard">
 								<i class="fas fa-home"></i>
-								<p>Dashboard</p>
+								<p>Admin-Dashboard</p>
 							</a>
 						</li>
 						<li class="nav-section">
@@ -95,7 +96,7 @@ session_start();
 						</li>
 						<li class="nav-item">
 							<a data-toggle="collapse" href="#base">
-								<i class="fas fa-layer-group"></i>
+								<i class="fas fa-cubes"></i>
 								<p>Data Master</p>
 								<span class="caret"></span>
 							</a>
@@ -111,6 +112,17 @@ session_start();
 											<span class="sub-item">Ruangan</span>
 										</a>
 									</li>
+									<li>
+										<a href="?view=kelolauser">
+											<span class="sub-item">Kelola User</span>
+										</a>
+									</li>
+									<li>
+										<a href="?view=jadwal">
+											<span class="sub-item">Kelola Jadwal</span>
+										</a>
+									</li>
+									
 								</ul>
 							</div>
 						</li>
@@ -124,10 +136,11 @@ session_start();
 
 						<li class="nav-item">
 							<a href="?view=datapinjamruangan">
-								<i class="fas fa-briefcase"></i>
+							<i class="fas fa-archway"></i>
 								<p>Pinjam Ruangan</p>
 							</a>
 						</li>
+						
 
 						<li class="nav-item">
 							<a href="../logout.php">
@@ -146,6 +159,12 @@ session_start();
                         include 'dashboard.php';
                     elseif($_GET['view']=='dashboard')
                         include 'dashboard.php';
+					elseif ($_GET['view']== 'kelolauser') {
+						include 'kelolauser.php';
+					}
+					elseif ($_GET['view']== 'jadwal') {
+						include 'jadwal.php';
+					}
 
                     // Data Barang
                     elseif($_GET['view']=='databarang')

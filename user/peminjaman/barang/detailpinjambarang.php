@@ -1,4 +1,9 @@
 <?php
+// $conn = mysqli_connect('localhost','root','','peminjaman');
+
+// if (!$conn) {
+//     die("Koneksi gagal: " . mysqli_connect_error());
+// }
 $query = mysqli_query($conn, "SELECT pinjambarang.id, pinjambarang.id_barang, pinjambarang.id_user, pinjambarang.tgl_mulai, pinjambarang.tgl_selesai, pinjambarang.qty, pinjambarang.lokasi_barang, pinjambarang.status, barang.nama_barang, barang.foto, barang.deskripsi, user.nama_lengkap from pinjambarang inner join barang on barang.id=pinjambarang.id_barang inner join user on user.id=pinjambarang.id_user and pinjambarang.id='$_GET[id]'");
 $d = mysqli_fetch_array($query);
 ?>
@@ -84,7 +89,7 @@ $d = mysqli_fetch_array($query);
 									<tr>
 										<td>Foto</td>
 										<td>:</td>
-										<td><img src="../admin/master/barang/Fotobarang/<?php echo $d['foto'] ?>" width="400" height="200"></td>
+										<td><img src="../admin/master/barang/Fotobarang/<?php echo $d['foto'] ?>" width: 40px; height: 40px;></td>
 									</tr>
 								</table>
 							</div>
@@ -95,6 +100,6 @@ $d = mysqli_fetch_array($query);
 		</div>
 	</div>
 	<center>
-		<h6><b>&copy; Copyright@2020|GPIB CINERE|</b></h6>
+		<h6><b>&copy; Copyright@2020|UMPKU|</b></h6>
 	</center>
 </div>

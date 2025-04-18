@@ -1,3 +1,47 @@
+<?php
+// koneksi harus dibuat dulu sebelum mysqli_query dipanggil
+// $conn = mysqli_connect('localhost','root','','peminjaman');
+
+// if (!$conn) {
+//     die("Koneksi gagal: " . mysqli_connect_error());
+// }
+
+if (isset($_POST['delete']) && isset($_POST['id'])) {
+    $id = $_POST['id'];
+
+    // Pastikan id adalah angka yang valid
+    if (is_numeric($id)) {
+        mysqli_query($conn, "DELETE FROM pinjamruangan WHERE id='$id'");
+        header("Location: datapinjamruangan.php");
+        exit;
+    } else {
+        echo "ID yang diberikan tidak valid.";
+    }
+}
+
+
+// Proses untuk menghapus seluruh data
+if (isset($_POST['delete_all'])) {
+    mysqli_query($conn, "DELETE FROM pinjamruangan");
+    header("Location: datapinjamruanan.php");
+    exit;
+}
+
+$query = mysqli_query($conn, 'SELECT pinjamruangan.id, 
+pinjamruangan.id_ruangan, 
+pinjamruangan.id_user, 
+pinjamruangan.tgl_mulai, 
+pinjamruangan.tgl_selesai, 
+pinjamruangan.status, 
+pinjamruangan.nama_peminjam, 
+pinjamruangan.email_peminjam 
+FROM pinjamruangan INNER JOIN ruangan ON ruangan.id=pinjamruangan.id_ruangan');
+
+if (!$query) {
+    die("Query failed: " . mysqli_error($conn)); // Debugging line
+}
+?>
+
 <div class="main-panel">
 	<div class="content">
 		<div class="page-inner">
@@ -29,7 +73,9 @@
 						<div class="card-header">
 							<div class="d-flex align-items-center">
 								<h4 class="card-title">Data Pinjam Ruangan</h4>
-
+								<form method="POST" style="margin-left: auto;">
+                                    <button type="submit" name="delete_all" class="btn btn-danger">Delete All</button>
+                                </form>
 							</div>
 						</div>
 						<div class="card-body">
@@ -39,6 +85,8 @@
 										<tr>
 											<th>No</th>
 											<th>Nama Ruangan</th>
+											<th>Nama Peminjam</th>
+                                            <th>Email Peminjam</th>
 											<th>Tgl Mulai</th>
 											<th>Tgl Selesai</th>
 											<th>Status</th>
@@ -49,12 +97,14 @@
 									<tbody>
 										<?php
 										$no = 1;
-										$query = mysqli_query($conn, 'SELECT pinjamruangan.id, pinjamruangan.id_ruangan, pinjamruangan.id_user, pinjamruangan.tgl_mulai, pinjamruangan.tgl_selesai, pinjamruangan.status, ruangan.nama_ruangan from pinjamruangan inner join ruangan on ruangan.id=pinjamruangan.id_ruangan inner join user on user.id=pinjamruangan.id_user');
+										$query = mysqli_query($conn, 'SELECT pinjamruangan.id, pinjamruangan.id_ruangan, pinjamruangan.id_user, pinjamruangan.tgl_mulai, pinjamruangan.tgl_selesai, pinjamruangan.status, ruangan.nama_ruangan, nama_lengkap as nama_peminjam, email as email_peminjam FROM pinjamruangan INNER JOIN ruangan ON ruangan.id=pinjamruangan.id_ruangan INNER JOIN user ON user.id=pinjamruangan.id_user');
 										while ($pinjamruangan = mysqli_fetch_array($query)) {
 										?>
 											<tr>
 												<td><?php echo $no++ ?></td>
 												<td><?php echo $pinjamruangan['nama_ruangan'] ?></td>
+												<td><?php echo $pinjamruangan['nama_peminjam'] ?></td>
+                                                <td><?php echo $pinjamruangan['email_peminjam'] ?></td>
 												<td><?php echo $pinjamruangan['tgl_mulai'] ?></td>
 												<td><?php echo $pinjamruangan['tgl_selesai'] ?></td>
 												<td>
@@ -72,6 +122,10 @@
 														<a href="?view=detailpinjamruangan&id=<?php echo $pinjamruangan['id'] ?>" title="Detail" class="btn btn-xs btn-success"><i class="fa fa-eye"></i></a>
 														<div class="badge badge-success"><?php echo $pinjamruangan['status'] ?></div>
 													<?php } ?>
+													<form method="POST" style="display:inline;">
+                                                    	<input type="hidden" name="id" value="<?php echo $pinjamruangan['id']; ?>">
+                                                    	<button type="submit" name="delete" class="btn btn-xs btn-danger" onclick="return confirm('Are you sure you want to delete this item?');"><i class="fa fa-trash"></i> Delete</button>
+                                                	</form>
 												</td>
 											</tr>
 										<?php } ?>
@@ -116,14 +170,6 @@ while ($row = mysqli_fetch_array($c)) {
 						<input type="hidden" name="id_ruangan" value="<?php echo $row['id_ruangan'] ?>">
 						<input type="hidden" name="tgl_mulai" value="<?php echo $row['tgl_mulai'] ?>">
 						<input type="hidden" name="tgl_selesai" value="<?php echo $row['tgl_selesai'] ?>">
-						<div class="form-group">
-							<label>Email Pengirim</label>
-							<input type="email" name="email_pengirim" class="form-control" placeholder="Email Pengirim ...">
-						</div>
-						<div class="form-group">
-							<label>Password Pengirim</label>
-							<input type="password" name="password_penerima" class="form-control" placeholder="Password Pengirim ...">
-						</div>
 						<input type="hidden" name="status" value="approve">
 						<input type="hidden" name="email_penerima" value="<?php echo $row['email'] ?>">
 						<input type="hidden" name="nama_ruangan" value="<?php echo $row['nama_ruangan'] ?>">
@@ -140,6 +186,7 @@ while ($row = mysqli_fetch_array($c)) {
 <?php } ?>
 
 <?php
+
 if (isset($_POST['ubah'])) {
 	$id = $_POST['id'];
 	$id_ruangan = $_POST['id_ruangan'];
